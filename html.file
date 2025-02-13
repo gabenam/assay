@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Valentine Game for Jessie Li</title>
+  <style>
+    /******************************************
+     * BASIC RESET & GLOBAL STYLES
+     ******************************************/
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Arial", sans-serif;
+      /* Subtle gradient background */
+      background: linear-gradient(135deg, #ffcccc 0%, #ffe6e6 100%);
+      color: #333;
+      overflow-x: hidden;
+      transition: background-color 0.5s ease;
+    }
+    /* Container styling */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      /* Subtle box shadow to stand out from background */
+      background-color: #ffffffcc;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /******************************************
+     * STEP VISIBILITY & TRANSITIONS
+     ******************************************/
+    .step {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .step.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /******************************************
+     * HEADINGS & TEXT
+     ******************************************/
+    h1, h2, p {
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #cc0000;
+    }
+    h2 {
+      font-size: 1.6rem;
+      color: #cc3333;
+    }
+
+    /******************************************
+     * BUTTON STYLES
+     ******************************************/
+    button {
+      background-color: #ff4d4d;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      margin: 0.5rem;
+    }
+    button:hover {
+      background-color: #ff1a1a;
+      transform: translateY(-2px);
+    }
+
+    /******************************************
+     * FLOATING HEARTS
+     ******************************************/
+    .floating-heart {
+      position: absolute;
+      bottom: -10%;
+      font-size: 2rem;
+      color: #ff4d4d;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: floatUp 10s linear infinite;
+    }
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-120vh) rotate(360deg);
+      }
+    }
+
+    /******************************************
+     * DISCO BACKGROUND & WIGGLE (DANCE)
+     ******************************************/
+    @keyframes discoBG {
+      0%   { background-color: #ffe6e6; }
+      25%  { background-color: #ffd9f3; }
+      50%  { background-color: #ffcce0; }
+      75%  { background-color: #fff0f0; }
+      100% { background-color: #ffe6e6; }
+    }
+    body.disco {
+      animation: discoBG 2s linear infinite;
+    }
+    @keyframes wiggle {
+      0%   { transform: rotate(-2deg); }
+      50%  { transform: rotate(2deg); }
+      100% { transform: rotate(-2deg); }
+    }
+    .dance {
+      animation: wiggle 0.2s ease-in-out infinite;
+    }
+
+    /******************************************
+     * POPUP OVERLAY
+     ******************************************/
+    #popupOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    #popup {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 80%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    #popup h2 {
+      margin-bottom: 1rem;
+      color: #cc0000;
+    }
+
+    /******************************************
+     * MEDIA QUERIES
+     ******************************************/
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
+      button {
+        margin: 0.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating hearts for a festive feel -->
+  <div class="floating-heart" style="left: 10%; animation-duration: 9s;">❤️</div>
+  <div class="floating-heart" style="left: 30%; animation-duration: 11s;">❤️</div>
+  <div class="floating-heart" style="left: 50%; animation-duration: 8s;">❤️</div>
+  <div class="floating-heart" style="left: 70%; animation-duration: 12s;">❤️</div>
+  <div class="floating-heart" style="left: 90%; animation-duration: 10s;">❤️</div>
+
+  <main class="container" id="mainContainer">
+    <!-- Intro Section -->
+    <section id="introSection" class="step active">
+      <h1>Welcome to the Valentine’s Game</h1>
+      <p>We have a few fun questions for you—are you ready?</p>
+      <button id="startBtn">Start</button>
+    </section>
+
+    <!-- Step 1: Check Availability -->
+    <section id="step1" class="step">
+      <h2>Are you free on February 21?</h2>
+      <p>I’d love to spend some time with you that day!</p>
+      <button id="freeYes">Yes, I'm free!</button>
+      <button id="freeNo">No, sorry!</button>
+    </section>
+
+    <!-- Step 2: Cuisine Selection -->
+    <section id="step2" class="step">
+      <h2>Which cuisine are you craving?</h2>
+      <p>Italian, Korean, or Chinese?</p>
+      <button class="cuisineBtn" data-choice="Italian">Italian</button>
+      <button class="cuisineBtn" data-choice="Korean">Korean</button>
+      <button class="cuisineBtn" data-choice="Chinese">Chinese</button>
+    </section>
+
+    <!-- Step 3: Final Valentine Question -->
+    <section id="step3" class="step">
+      <h2>Jessie Li, Will You Be My Valentine?</h2>
+      <button id="finalYes">Yes</button>
+      <button id="finalNo">No</button>
+    </section>
+  </main>
+
+  <!-- Popup for displaying messages -->
+  <div id="popupOverlay">
+    <div id="popup">
+      <h2 id="popupText"></h2>
+      <button id="popupCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    /******************************************
+     * SELECT DOM ELEMENTS
+     ******************************************/
+    const introSection = document.getElementById('introSection');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+
+    const startBtn = document.getElementById('startBtn');
+    const freeYes = document.getElementById('freeYes');
+    const freeNo = document.getElementById('freeNo');
+    const cuisineButtons = document.querySelectorAll('.cuisineBtn');
+    const finalYes = document.getElementById('finalYes');
+    const finalNo = document.getElementById('finalNo');
+
+    const popupOverlay = document.getElementById('popupOverlay');
+    const popupText = document.getElementById('popupText');
+    const popupCloseBtn = document.getElementById('popupCloseBtn');
+
+    const mainContainer = document.getElementById('mainContainer');
+    const body = document.body;
+
+    /******************************************
+     * STATE VARIABLES
+     ******************************************/
+    let isFeb21Free = null;
+    let chosenCuisine = null;
+
+    /******************************************
+     * HELPER FUNCTIONS
+     ******************************************/
+    // Show a popup message
+    function showPopup(message) {
+      popupText.textContent = message;
+      popupOverlay.style.display = 'flex';
+    }
+    // Hide the popup
+    function hidePopup() {
+      popupOverlay.style.display = 'none';
+    }
+    popupCloseBtn.addEventListener('click', hidePopup);
+
+    // Trigger the disco dance effect
+    function startDancing() {
+      body.classList.add('disco');
+      mainContainer.classList.add('dance');
+    }
+
+    // Switch from one step to the next
+    function transitionStep(currentStep, nextStep) {
+      currentStep.classList.remove('active');
+      nextStep.classList.add('active');
+    }
+
+    /******************************************
+     * EVENT LISTENERS: GAME FLOW
+     ******************************************/
+    // 1. Intro "Start" button
+    startBtn.addEventListener('click', () => {
+      transitionStep(introSection, step1);
+    });
+
+    // 2. Step 1: Availability
+    freeYes.addEventListener('click', () => {
+      isFeb21Free = true;
+      transitionStep(step1, step2);
+    });
+    freeNo.addEventListener('click', () => {
+      isFeb21Free = false;
+      transitionStep(step1, step2);
+    });
+
+    // 3. Step 2: Cuisine selection
+    cuisineButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        chosenCuisine = btn.dataset.choice;
+        transitionStep(step2, step3);
+      });
+    });
+
+    // 4. Step 3: Final Valentine question
+    finalYes.addEventListener('click', () => {
+      startDancing();
+      showPopup("Woohoo! I'm so happy you said YES! Let's dance!");
+      step3.classList.remove('active');
+    });
+
+    finalNo.addEventListener('click', () => {
+      showPopup("Oh no! Thank you for playing anyway!");
+      step3.classList.remove('active');
+    });
+  </script>
+</body>
+</html>
